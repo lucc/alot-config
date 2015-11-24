@@ -2,3 +2,6 @@
   [[web]]
     realname = Lucas Hoffmann
     address = l-m-h@web.de
+    sendmail_command = msmtp --file /home/luc/.config/msmtp/msmtprc --account web -t
+    sent_box = maildir:///home/luc/mail/inbox
+    draft_box = maildir:///home/luc/mail/drafts
