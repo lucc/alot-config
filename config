@@ -5,3 +5,6 @@
     sendmail_command = msmtp --file /home/luc/.config/msmtp/msmtprc --account web -t
     sent_box = maildir:///home/luc/mail/inbox
     draft_box = maildir:///home/luc/mail/drafts
+    [[[abook]]]
+      type = abook
+      abook_contacts_file = ~/.config/abook/addressbook
