@@ -1,3 +1,5 @@
+# alot config file by luc
+# vim: filetype=ini
 [accounts]
   [[web]]
     realname = Lucas Hoffmann
