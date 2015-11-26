@@ -11,3 +11,5 @@
     [[[abook]]]
       type = abook
       abook_contacts_file = ~/.config/abook/addressbook
+[bindings]
+  f1 = shellescape elinks\ /usr/share/doc/alot/index.html
