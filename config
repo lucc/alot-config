@@ -1,5 +1,6 @@
 # alot config file by luc
 # vim: filetype=desktop
+quit_on_last_bclose = True
 [accounts]
   [[web]]
     realname = Lucas Hoffmann
@@ -15,3 +16,4 @@
       abook_contacts_file = ~/.config/abook/addressbook
 [bindings]
   f1 = shellescape elinks\ /usr/share/doc/alot/index.html
+  q = bclose
