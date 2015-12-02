@@ -4,7 +4,6 @@
 import logging
 import re
 import subprocess
-import sys
 
 
 def reply_subject(subject):
@@ -39,24 +38,21 @@ def strip_subject(subject, *prefixes):
                   flags=re.IGNORECASE).strip()
 
 
-def pre_search_bclose(ui, **kwargs): bclose_wrapper(ui)
-def pre_thread_bclose(ui, **kwargs): bclose_wrapper(ui)
-def pre_global_bclose(ui, **kwargs): bclose_wrapper(ui)
-def pre_envelope_bclose(ui, **kwargs): bclose_wrapper(ui)
-def pre_taglist_bclose(ui, **kwargs): bclose_wrapper(ui)
-def pre_bufferlist_bclose(ui, **kwargs): bclose_wrapper(ui)
+def post_global_bclose(ui, **kwarg):
+    logging.debug('post_global_bclose() results in {} buffer(s).'.format(
+        len(ui.buffers)))
 
 
-def bclose_wrapper(ui, **kwargs):
-    """Helper function is needed because there is no uniform hook for all
-    bclose events.
+def pre_global_bclose(ui, **kwargs):
+    """Check if the last buffer is beeing closed and update the awesome mail
+    widget in case it is.
 
     :ui: the alot ui instance
     :returns: None
 
     """
-    logging.debug('Calling {} results in {} buffer(s).'.format(
-        sys._getframe().f_back.f_code.co_name, len(ui.buffers)))
+    logging.debug('pre_global_bclose() results in {} buffer(s).'.format(
+        len(ui.buffers)))
     if len(ui.buffers) == 1:
         update_awesome_mail_widget()
 
