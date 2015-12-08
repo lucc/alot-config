@@ -1,0 +1,49 @@
+#!/bin/sh
+
+while getopts h FLAG; do
+  case $FLAG in
+    h) echo help; exit;;
+  esac
+done
+shift $(($OPTIND - 1))
+to="$1"
+shift
+if ! echo "$to" | grep -q @; then
+  to=$(lbdbq "$to" | tail -n +2 | cut -f 1)
+  if [ $(echo "$to" | wc -l) -gt 1 ]; then
+    echo 'Select one of the following addresses (use an invalid number to cancle):'
+    select address in $to; do
+      if [ -z "$address" ]; then
+	exit 1
+      else
+	to=$address
+	break
+      fi
+    done
+  fi
+fi
+
+# collect arguments into subject
+if [ $# -gt 0 ]; then
+  subject="$*"
+fi
+
+# capture stdin if not a terminal
+if [ ! -t 0 ]; then
+  text=$(cat)
+  if [ ${#text} -ne 0 -a -z "$subject" -a $(echo "$text"|wc -l) -eq 1 ]; then
+    subject="$text"
+    template=/dev/null
+  else
+    template=$(mktemp)
+    echo "$text" > "$template"
+  fi
+fi
+
+# get a subject if non was given
+if [ -z "$subject" ]; then
+  echo -n 'Subject: '
+  read subject
+fi
+
+EDITOR='printf ""' alot --config ${XDG_CONFIG_HOME:-$HOME/.config}/alot/sms.config compose --to="$to" --subject="$subject"
