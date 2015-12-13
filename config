@@ -15,6 +15,13 @@ theme = luc
     [[[abook]]]
       type = abook
       abook_contacts_file = ~/.config/abook/addressbook
+  [[lists]]
+    realname = Lucas Hoffmann
+    address = luc.lists@gmail.com
+    sendmail_command = msmtp --file /home/luc/.config/msmtp/msmtprc --read-recipients --read-envelope-from
+    sent_box = maildir:///home/luc/mail/inbox
+    draft_box = maildir:///home/luc/mail/drafts
+    sign_by_default = True
 [bindings]
   f1 = shellescape elinks\ /usr/share/doc/alot/index.html
   q = bclose
