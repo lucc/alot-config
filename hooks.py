@@ -2,14 +2,19 @@
 
 """alot hooks file by luc"""
 
+# Part 1: imports
+# Part 2: classes
+# Part 3: helper functions
+# Part 4: variables
+# Part 5: hooks
 
 import alot
 from email.utils import getaddresses, parseaddr
 import logging
+from twisted.internet.defer import inlineCallbacks
 import os
 import re
 import subprocess
-
 
 class GPGDatabase():
 
@@ -226,8 +231,6 @@ def update_awesome_mail_widget():
         'require("vicious").force({require("widgets/notmuch").widget})')
 
 
-import re
-
 transitions = [
     ('.*grillchill@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
     ('.*tanzhans@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
@@ -246,9 +249,6 @@ def pre_edit_translate(bodytext, ui, dbm):
                               bodytext)
     return bodytext
 
-
-from twisted.internet.defer import inlineCallbacks
-import re
 
 # warn before sending mail without attachment.  Copied from wiki.
 attachments_re = re.compile('(attach|anhang|beigefügt|anhängen|angehängt)',
