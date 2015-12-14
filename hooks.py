@@ -222,3 +222,24 @@ def update_awesome_mail_widget():
     p = subprocess.Popen(['awesome-client'], stdin=subprocess.PIPE)
     p.communicate(
         'require("vicious").force({require("widgets/notmuch").widget})')
+
+
+import re
+
+transitions = [
+    ('.*grillchill@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
+    ('.*tanzhans@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
+    ]
+
+addr_trans = []
+for addr, fr in transitions:
+    addr_trans.append((re.compile("(To|Cc): %s" % addr, re.MULTILINE),
+                       "From: %s" % fr))
+
+def pre_edit_translate(bodytext, ui, dbm):
+    fromre = re.compile('^From: .*$', re.MULTILINE)
+    for addr, new_from in addr_trans:
+        if addr.search(bodytext):
+            bodytext = re.sub(fromre, new_from,
+                              bodytext)
+    return bodytext
