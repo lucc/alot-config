@@ -206,11 +206,6 @@ def strip_subject(subject, *prefixes):
                   flags=re.IGNORECASE).strip()
 
 
-def post_global_bclose(ui, **kwarg):
-    logging.debug('post_global_bclose() results in {} buffer(s).'.format(
-        len(ui.buffers)))
-
-
 def pre_global_bclose(ui, **kwargs):
     """Check if the last buffer is beeing closed and update the awesome mail
     widget in case it is.
@@ -219,8 +214,6 @@ def pre_global_bclose(ui, **kwargs):
     :returns: None
 
     """
-    logging.debug('pre_global_bclose() results in {} buffer(s).'.format(
-        len(ui.buffers)))
     if len(ui.buffers) == 1:
         update_awesome_mail_widget()
 
