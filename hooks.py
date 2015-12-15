@@ -2,19 +2,14 @@
 
 """alot hooks file by luc"""
 
-# Part 1: imports
-# Part 2: classes
-# Part 3: helper functions
-# Part 4: variables
-# Part 5: hooks
-
-import alot
 from email.utils import getaddresses, parseaddr
-import logging
 from twisted.internet.defer import inlineCallbacks
+import alot
+import logging
 import os
 import re
 import subprocess
+
 
 class GPGDatabase():
 
