@@ -132,35 +132,46 @@ class GPGDatabase():
             yield item
 
 
-gpg_database = GPGDatabase(capability='e')
+class AutoEncryptHook():
 
+    """Class to wrap a custom autoencryption hook."""
 
-def find_gpg_key(query):
-    """Find a gpg key that matches the query."""
-    results = gpg_database.search(query)
-    for item in results:
-        for uid in item['uid']:
-            name, address = parseaddr(uid)
-            if query.lower() in address.lower():
-                for kid in item['kid']:
-                    if 'e' in item['kid'][kid]['cap']:
-                        return kid
+    gpg_database = GPGDatabase(capability='e')
+
+    @classmethod
+    def find_gpg_key(cls, query):
+        """Find a gpg key that matches the query."""
+        results = cls.gpg_database.search(query)
+        for item in results:
+            for uid in item['uid']:
+                name, address = parseaddr(uid)
+                if query.lower() in address.lower():
+                    for kid in item['kid']:
+                        if 'e' in item['kid'][kid]['cap']:
+                            return kid
+
+    @classmethod
+    def run_hook(cls, ui, buffer):
+        """Enable automatic gpg encryption of mail if possible.
+
+        :ui: the alot user interface
+        :buffer: the alot.buffers.EnvelopeBuffer instance
+        :returns: None
+
+        """
+        envelope = buffer.envelope
+        addresses = [addr.lower() for name, addr in getaddresses(
+            envelope.get_all('To') + envelope.get_all('Cc') +
+            envelope.get_all('Bcc') + envelope.get_all('From'))]
+        keys = [cls.find_gpg_key(addr) for addr in addresses]
+        if all(keys):
+            ui.apply_commandline('encrypt '+' '.join(keys))
 
 
 def post_buffer_open(ui, dbm, buf):
     """Enable automatic gpg encryption of mail if possible."""
-    #logging.debug('Opening buffer {} of type {}.'.format(buf, type(buf)))
     if isinstance(buf, alot.buffers.EnvelopeBuffer):
-        envelope = buf.envelope
-        logging.debug('To fields: {}'.format(envelope.get_all('To')))
-        logging.debug('Cc fields: {}'.format(envelope.get_all('Cc')))
-        logging.debug('Bcc fields: {}'.format(envelope.get_all('Bcc')))
-        addresses = [addr.lower() for name, addr in getaddresses(
-            envelope.get_all('To') + envelope.get_all('Cc') +
-            envelope.get_all('Bcc') + envelope.get_all('From'))]
-        keys = [find_gpg_key(addr) for addr in addresses]
-        if all(keys):
-            ui.apply_commandline('encrypt '+' '.join(keys))
+        AutoEncryptHook.run_hook(ui, buf)
 
 
 def reply_subject(subject):
