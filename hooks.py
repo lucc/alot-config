@@ -230,26 +230,47 @@ def update_awesome_mail_widget():
         'require("vicious").force({require("widgets/notmuch").widget})')
 
 
-transitions = [
-    ('.*grillchill@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
-    ('.*tanzhans@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
-    ]
+class ChangeSenderByRecipientHook():
 
-addr_trans = []
-for addr, fr in transitions:
-    addr_trans.append((re.compile("(To|Cc): %s" % addr, re.MULTILINE),
-                       "From: %s" % fr))
+    # Copied from wiki.
+    """Change the sender of a mail depending of the recipients."""
+
+    transitions = [
+        ('.*grillchill@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
+        ('.*tanzhans@googlegroups.com.*', 'Lucas <luc.lists@gmail.com>'),
+        ]
+
+    addr_trans = []
+    for addr, fr in transitions:
+        addr_trans.append((re.compile("(To|Cc): %s" % addr, re.MULTILINE),
+                           "From: %s" % fr))
+    fromre = re.compile('^From: .*$', re.MULTILINE)
+
+    @classmethod
+    def run_hook(cls, bodytext):
+        """Run the hook
+
+        :bodytext: The body text of the email
+        :returns: the transformed body text
+
+        """
+        for addr, new_from in cls.addr_trans:
+            if addr.search(bodytext):
+                bodytext = re.sub(cls.fromre, new_from, bodytext)
+        return bodytext
+
 
 def pre_edit_translate(bodytext, ui, dbm):
-    fromre = re.compile('^From: .*$', re.MULTILINE)
-    for addr, new_from in addr_trans:
-        if addr.search(bodytext):
-            bodytext = re.sub(fromre, new_from,
-                              bodytext)
+    bodytext = ChangeSenderByRecipientHook.run_hook(bodytext)
+    # Remove "empty" lines at the end
+    #if re.match(r'\n\s*(>\s*)*$', bodytext)
+    # Step 2: compact all quote chars
     return bodytext
 
 
-# warn before sending mail without attachment.  Copied from wiki.
+# warn before sending mail without attachment.  Copied from wiki.  It seems
+# that it is not possible to turn this into a class because of the
+# inlineCallbacks stuff.
 attachments_re = re.compile('(attach|anhang|beigefügt|anhängen|angehängt)',
         re.IGNORECASE)
 
